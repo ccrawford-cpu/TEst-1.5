@@ -44,8 +44,12 @@
     try {
       const response = await fetch(form.action, {
         method: "POST",
-        body: new FormData(form),
-        headers: { Accept: "application/json" },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name.value.trim(),
+          email: form.email.value.trim(),
+          message: form.message.value.trim(),
+        }),
       });
 
       if (response.ok) {
@@ -54,10 +58,7 @@
         form.reset();
       } else {
         const data = await response.json().catch(() => null);
-        const errorMessage =
-          data && data.errors
-            ? data.errors.map((e) => e.message).join(", ")
-            : "Something went wrong. Please try again later.";
+        const errorMessage = (data && data.error) || "Something went wrong. Please try again later.";
         status.classList.add("failure");
         status.textContent = errorMessage;
       }
