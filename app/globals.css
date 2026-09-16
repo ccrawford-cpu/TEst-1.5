@@ -75,8 +75,7 @@ a:hover {
   font-weight: 500;
 }
 
-.nav-links a:hover,
-.nav-links a[aria-current="page"] {
+.nav-links a:hover {
   color: var(--color-text);
 }
 
@@ -118,6 +117,11 @@ main {
 .btn:hover {
   background: var(--color-accent-hover);
   color: #0b0d12;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .cards {
@@ -222,7 +226,6 @@ textarea {
   color: #ff6b6b;
   font-size: 0.85rem;
   margin-top: 0.35rem;
-  display: none;
 }
 
 .field.invalid input,
@@ -230,24 +233,17 @@ textarea {
   border-color: #ff6b6b;
 }
 
-.field.invalid .error-text {
-  display: block;
-}
-
 .form-status {
   margin-top: 1rem;
   font-weight: 600;
-  display: none;
 }
 
 .form-status.success {
   color: #4ade80;
-  display: block;
 }
 
 .form-status.failure {
   color: #ff6b6b;
-  display: block;
 }
 
 .contact-info {

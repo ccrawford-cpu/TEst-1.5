@@ -1,24 +1,64 @@
-# Codecraft Academy — sample three-page site
+# Codecraft Academy
 
-Static site (Home / About / Contact) built for a code academy exercise.
-The contact form posts to a small Vercel + Resend serverless function — see
-[`contact-api/README.md`](contact-api/README.md) for deploying that piece.
+A three-page site (Home / About / Contact) for a fictional coding bootcamp,
+built with Next.js. The contact form validates on the server with Zod,
+saves each submission to a Neon Postgres database through Drizzle, and
+sends two emails via Resend: a notification to the site owner and a
+confirmation to whoever submitted the form.
 
-## Deploy to GitHub Pages
+## Stack
 
-1. Create a new **empty** repo on GitHub (no README/license) — e.g. `codecraft-academy`.
-2. From this folder:
+- [Next.js](https://nextjs.org) (App Router, TypeScript) — pages + API route, deployed on [Vercel](https://vercel.com)
+- [Zod](https://zod.dev) — server-side request validation
+- [Drizzle ORM](https://orm.drizzle.team) + [Neon](https://neon.tech) (serverless Postgres) — persistence
+- [Resend](https://resend.com) — transactional email
+
+## Running it locally
+
+1. Install dependencies:
    ```bash
-   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
-   git branch -M main
-   git push -u origin main
+   npm install
    ```
-3. On GitHub: **Settings → Pages → Source → Deploy from a branch → `main` / `/(root)` → Save**.
-4. Your site will be live at `https://YOUR_USERNAME.github.io/YOUR_REPO/` within a minute or two.
+2. Copy `.env.example` to `.env.local` and fill in:
+   - `DATABASE_URL` — a Neon connection string
+   - `RESEND_API_KEY` — from resend.com/api-keys
+   - `CONTACT_FROM_EMAIL` — a verified Resend sender, or `onboarding@resend.dev` for testing
+   - `CONTACT_TO_EMAIL` — where form notifications should land
+3. Push the database schema:
+   ```bash
+   npm run db:push
+   ```
+4. Start the dev server:
+   ```bash
+   npm run dev
+   ```
+   Visit `http://localhost:3000`.
 
-## Wire up the contact form
+## Deploying
 
-1. Deploy the function in [`contact-api/`](contact-api) (see its README).
-2. Edit [`contact.html`](contact.html) and replace `YOUR_VERCEL_PROJECT` in the
-   `<form action="...">` with your deployed Vercel domain.
-3. Commit and push the change; GitHub Pages will pick it up automatically.
+```bash
+npx vercel login
+npx vercel link
+npx vercel env add DATABASE_URL production
+npx vercel env add RESEND_API_KEY production
+npx vercel env add CONTACT_FROM_EMAIL production
+npx vercel env add CONTACT_TO_EMAIL production
+npx vercel --prod
+```
+
+## Project structure
+
+```
+app/
+  page.tsx            Home
+  about/page.tsx       About
+  contact/
+    page.tsx           Contact (server component, renders the form)
+    ContactForm.tsx     Client component: submit + success/error UI
+  api/contact/route.ts  POST handler: Zod validate -> Drizzle insert -> Resend x2
+lib/
+  schema.ts             Drizzle table definition
+  db.ts                 Drizzle client (neon-http driver)
+  validation.ts          Zod schema shared by the API route
+  email.ts               Resend notification + confirmation senders
+```

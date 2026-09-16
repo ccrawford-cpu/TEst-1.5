@@ -1,3 +1,19 @@
 node_modules/
 .DS_Store
-contact-api/
+
+# next.js
+.next/
+out/
+build/
+
+# env files — never commit real credentials
+.env
+.env.local
+.env.*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
